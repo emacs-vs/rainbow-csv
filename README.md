@@ -6,7 +6,9 @@
 
 ## 🔧 Usage
 
-WIP
+```elisp
+M-x rainbow-csv-mode
+```
 
 ## 🔗 References
 
