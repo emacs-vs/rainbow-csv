@@ -98,7 +98,7 @@
 
 (defun rainbow-csv--revert-font-lock-keywords ()
   "Revert to default font lock rules."
-  (unless rainbow-csv--old-csv-font-lock-keywords  ; First assign
+  (unless rainbow-csv--old-csv-font-lock-keywords
     (setq rainbow-csv--old-csv-font-lock-keywords csv-font-lock-keywords))
   (setq csv-font-lock-keywords rainbow-csv--old-csv-font-lock-keywords))
 
@@ -126,8 +126,9 @@
                        separator separator (1+ i)))
             (color (or (nth i rainbow-csv-colors)
                        (rainbow-csv--rgb))))
-        (nconc csv-font-lock-keywords
-               `((,r (1 '(face (:foreground ,color)) prepend t)))))))
+        (setq csv-font-lock-keywords
+              (append csv-font-lock-keywords
+                      `((,r (1 '(face (:foreground ,color)) prepend t))))))))
   (font-lock-refresh-defaults))
 
 ;;
@@ -138,7 +139,8 @@
   "Post insert."
   (when (memq last-command-event '(?, ?\"))
     (message "update once!")
-    (rainbow-csv-highlight)))
+    ;;(rainbow-csv-highlight)
+    ))
 
 (provide 'rainbow-csv)
 ;;; rainbow-csv.el ends here
