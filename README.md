@@ -1,5 +1,8 @@
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![JCS-ELPA](https://raw.githubusercontent.com/jcs-emacs/badges/master/elpa/v/rainbow-csv.svg)](https://jcs-emacs.github.io/jcs-elpa/#/rainbow-csv)
+
 # rainbow-csv
-🌈Rainbow CSV - Emacs extension: Highlight CSV and TSV spreadsheet files in different rainbow colors
+> Highlight CSV and TSV spreadsheet files in different rainbow colors
 
 ## 🔧 Usage
 
