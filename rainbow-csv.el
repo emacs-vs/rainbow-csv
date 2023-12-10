@@ -6,7 +6,7 @@
 ;; Maintainer: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/emacs-vs/rainbow-csv
 ;; Version: 0.1.0
-;; Package-Requires: ((emacs "26.1") (csv-mode "1.22"))
+;; Package-Requires: ((emacs "27.1") (csv-mode "1.22"))
 ;; Keywords: convenience csv
 
 ;; This file is not part of GNU Emacs.
@@ -122,13 +122,22 @@
                              (line-beginning-position) (line-end-position))))
          (n (1+ n)))
     (dotimes (i n)
-      (let ((r (format "^\\([^%c\n]*\"\\(?:[^\"\\]+\\|\\\\\\(?:.\\|\\)\\)*[\"]+[%c\n]+\\)\\{%d\\}"
+      (let ((r (format "^\\([^%c\"\n]*\"\\(?:[^\"\\]+\\|\\\\\\(?:.\\|\\)\\)*[\"]+[%c]+\\)\\{%d\\}"
                        separator separator (1+ i)))
             (color (or (nth i rainbow-csv-colors)
                        (rainbow-csv--rgb))))
         (setq csv-font-lock-keywords
               (append csv-font-lock-keywords
                       `((,r (1 '(face (:foreground ,color)) prepend t))))))))
+  ;; For last column!
+  (let* ((r (format "[%c]+.*\\(\"\\(?:[^\"\\]+\\|\\\\\\(?:.\\|\\)\\)*[\"]+[\n]+\\)\\{%d\\}"
+                    separator 1))
+         (i n)
+         (color (or (nth i rainbow-csv-colors)
+                    (rainbow-csv--rgb))))
+    (setq csv-font-lock-keywords
+          (append csv-font-lock-keywords
+                  `((,r (1 '(face (:foreground ,color)) prepend t))))))
   (font-lock-refresh-defaults))
 
 ;;
@@ -137,10 +146,8 @@
 
 (defun rainbow-csv--post-self-insert (&rest _)
   "Post insert."
-  (when (memq last-command-event '(?, ?\"))
-    (message "update once!")
-    ;;(rainbow-csv-highlight)
-    ))
+  (when (memq last-command-event '(?,))
+    (rainbow-csv-highlight)))
 
 (provide 'rainbow-csv)
 ;;; rainbow-csv.el ends here
