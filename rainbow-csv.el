@@ -50,6 +50,34 @@
   :type 'list
   :group 'rainbow-csv)
 
+(defvar rainbow-csv--old-csv-font-lock-keywords nil
+  "Store the old value for variable `csv-font-lock-keywords'.")
+
+;;
+;; (@* "Entry" )
+;;
+
+(defun rainbow-csv--enable ()
+  "Enable `rainbow-csv' in current buffer."
+  (add-hook 'post-self-insert-hook #'rainbow-csv--post-self-insert nil t)
+  (rainbow-csv-highlight))
+
+(defun rainbow-csv--disable ()
+  "Disable `rainbow-csv' in current buffer."
+  (remove-hook 'post-self-insert-hook #'rainbow-csv--post-self-insert t)
+  (rainbow-csv-revert-font-lock))
+
+;;;###autoload
+(define-minor-mode rainbow-csv-mode
+  "Minor mode `rainbow-csv-mode'."
+  :lighter " RainbowCSV"
+  :group rainbow-csv
+  (if rainbow-csv-mode (rainbow-csv--enable) (rainbow-csv--disable)))
+
+;;
+;; (@* "Util" )
+;;
+
 ;; Copied from the package `crazy-theme.el'
 (defun rainbow-csv--rgb-code (offset limit)
   "Generate random rgb code by OFFSET and LIMIT."
@@ -64,8 +92,9 @@
   (let ((code-tri (rainbow-csv--rgb-code 0 256)))
     (format "#%02X%02X%02X" (nth 0 code-tri) (nth 1 code-tri)  (nth 2 code-tri))))
 
-(defvar rainbow-csv--old-csv-font-lock-keywords nil
-  "Store the old value for variable `csv-font-lock-keywords'.")
+;;
+;; (@* "Core" )
+;;
 
 (defun rainbow-csv--revert-font-lock-keywords ()
   "Revert to default font lock rules."
@@ -73,6 +102,13 @@
     (setq rainbow-csv--old-csv-font-lock-keywords csv-font-lock-keywords))
   (setq csv-font-lock-keywords rainbow-csv--old-csv-font-lock-keywords))
 
+(defun rainbow-csv-revert-font-lock ()
+  "Revert to default font lock rules interactively."
+  (interactive)
+  (rainbow-csv--revert-font-lock-keywords)
+  (font-lock-refresh-defaults))
+
+;;;###autoload
 (defun rainbow-csv-highlight (&optional separator)
   "Not documented (SEPARATOR)."
   (interactive (list (when current-prefix-arg (read-char "Separator: "))))
@@ -93,6 +129,16 @@
         (nconc csv-font-lock-keywords
                `((,r (1 '(face (:foreground ,color)) prepend t)))))))
   (font-lock-refresh-defaults))
+
+;;
+;; (@* "Events" )
+;;
+
+(defun rainbow-csv--post-self-insert (&rest _)
+  "Post insert."
+  (when (memq last-command-event '(?, ?\"))
+    (message "update once!")
+    (rainbow-csv-highlight)))
 
 (provide 'rainbow-csv)
 ;;; rainbow-csv.el ends here
