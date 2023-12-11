@@ -40,12 +40,16 @@
   :link '(url-link :tag "Repository" "https://github.com/emacs-vs/rainbow-csv"))
 
 (defcustom rainbow-csv-colors
-  '("red"
-    "orange"
-    "yellow"
-    "blue"
-    "cyan"
-    "purple")
+  '("#CCCCCC"
+    "#569CD6"
+    "#DCCD79"
+    "#529955"
+    "#CE834A"
+    "#8CDCFE"
+    "#B5C078"
+    "#4EC9B0"
+    "#569CD6"
+    "#F44747")
   "List of colors to use."
   :type 'list
   :group 'rainbow-csv)
@@ -59,12 +63,10 @@
 
 (defun rainbow-csv--enable ()
   "Enable `rainbow-csv' in current buffer."
-  (add-hook 'post-self-insert-hook #'rainbow-csv--post-self-insert nil t)
   (rainbow-csv-highlight))
 
 (defun rainbow-csv--disable ()
   "Disable `rainbow-csv' in current buffer."
-  (remove-hook 'post-self-insert-hook #'rainbow-csv--post-self-insert t)
   (rainbow-csv-revert-font-lock))
 
 ;;;###autoload
@@ -73,24 +75,6 @@
   :lighter " RainbowCSV"
   :group rainbow-csv
   (if rainbow-csv-mode (rainbow-csv--enable) (rainbow-csv--disable)))
-
-;;
-;; (@* "Util" )
-;;
-
-;; Copied from the package `crazy-theme.el'
-(defun rainbow-csv--rgb-code (offset limit)
-  "Generate random rgb code by OFFSET and LIMIT."
-  (list
-   (+ offset (random limit))
-   (+ offset (random limit))
-   (+ offset (random limit))))
-
-;; Copied from the package `crazy-theme.el'
-(defun rainbow-csv--rgb ()
-  "Generate random rgb color."
-  (let ((code-tri (rainbow-csv--rgb-code 0 256)))
-    (format "#%02X%02X%02X" (nth 0 code-tri) (nth 1 code-tri)  (nth 2 code-tri))))
 
 ;;
 ;; (@* "Core" )
@@ -114,31 +98,25 @@
   (interactive (list (when current-prefix-arg (read-char "Separator: "))))
   (rainbow-csv--revert-font-lock-keywords)
   (font-lock-mode 1)
-  (let* ((separator (or separator ?\,))
+  (let* ((separator (or separator (cl-case major-mode
+                                    (`tsv-mode ?\t)
+                                    (`csv-mode ?\,)
+                                    (t ?\,))))
          (n (save-excursion
               (goto-char (point-min))
               (search-forward "," nil t)
-              (count-matches (format "\"[ \t]*%s[ \t]*\"" (string separator))
+              (count-matches (string separator)
                              (line-beginning-position) (line-end-position))))
          (n (1+ n)))
     (dotimes (i n)
-      (let ((r (format "^\\([^%c\"\n]*\"\\(?:[^\"\\]+\\|\\\\\\(?:.\\|\\)\\)*[\"]+[%c\n]+\\)\\{%d\\}"
-                       separator separator (1+ i)))
-            (color (or (nth i rainbow-csv-colors)
-                       (rainbow-csv--rgb))))
+      (let* ((r (format "^\\([^%c\n]+%c\\)\\{%d\\}"
+                        separator separator (1+ i)))
+             (len (length rainbow-csv-colors))
+             (color (nth (% i len) rainbow-csv-colors)))
         (setq csv-font-lock-keywords
               (append csv-font-lock-keywords
                       `((,r (1 '(face (:foreground ,color)) prepend t))))))))
   (font-lock-refresh-defaults))
-
-;;
-;; (@* "Events" )
-;;
-
-(defun rainbow-csv--post-self-insert (&rest _)
-  "Post insert."
-  (when (memq last-command-event '(?,))
-    (rainbow-csv-highlight)))
 
 (provide 'rainbow-csv)
 ;;; rainbow-csv.el ends here
