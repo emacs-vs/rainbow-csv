@@ -122,22 +122,13 @@
                              (line-beginning-position) (line-end-position))))
          (n (1+ n)))
     (dotimes (i n)
-      (let ((r (format "^\\([^%c\"\n]*\"\\(?:[^\"\\]+\\|\\\\\\(?:.\\|\\)\\)*[\"]+[%c]+\\)\\{%d\\}"
+      (let ((r (format "^\\([^%c\"\n]*\"\\(?:[^\"\\]+\\|\\\\\\(?:.\\|\\)\\)*[\"]+[%c\n]+\\)\\{%d\\}"
                        separator separator (1+ i)))
             (color (or (nth i rainbow-csv-colors)
                        (rainbow-csv--rgb))))
         (setq csv-font-lock-keywords
               (append csv-font-lock-keywords
                       `((,r (1 '(face (:foreground ,color)) prepend t))))))))
-  ;; For last column!
-  (let* ((r (format "[%c]+.*\\(\"\\(?:[^\"\\]+\\|\\\\\\(?:.\\|\\)\\)*[\"]+[\n]+\\)\\{%d\\}"
-                    separator 1))
-         (i n)
-         (color (or (nth i rainbow-csv-colors)
-                    (rainbow-csv--rgb))))
-    (setq csv-font-lock-keywords
-          (append csv-font-lock-keywords
-                  `((,r (1 '(face (:foreground ,color)) prepend t))))))
   (font-lock-refresh-defaults))
 
 ;;
