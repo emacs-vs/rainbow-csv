@@ -4,6 +4,8 @@
 # rainbow-csv
 > Highlight CSV and TSV spreadsheet files in different rainbow colors
 
+<img src="./etc/demo.png"/>
+
 ## 🔧 Usage
 
 ```elisp
