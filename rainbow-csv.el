@@ -1,4 +1,4 @@
-;;; rainbow-csv.el --- Highlight CSV and TSV spreadsheet files in different rainbow colors  -*- lexical-binding: t; -*-
+;;; rainbow-csv.el --- Highlight CSV and TSV files in different rainbow colors  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2023  Shen, Jen-Chieh
 
@@ -26,7 +26,7 @@
 
 ;;; Commentary:
 ;;
-;; Highlight CSV and TSV spreadsheet files in different rainbow colors.
+;; Highlight CSV and TSV files in different rainbow colors.
 ;;
 
 ;;; Code:

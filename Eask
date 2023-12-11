@@ -1,6 +1,6 @@
 (package "rainbow-csv"
          "0.1.0"
-         "Highlight CSV and TSV spreadsheet files in different rainbow colors")
+         "Highlight CSV and TSV files in different rainbow colors")
 
 (website-url "https://github.com/emacs-vs/rainbow-csv")
 (keywords "convenience" "csv")
