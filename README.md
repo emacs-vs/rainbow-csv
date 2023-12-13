@@ -8,8 +8,17 @@
 
 ## 🔧 Usage
 
-```elisp
+To manually activate this plugin:
+
+```
 M-x rainbow-csv-mode
+```
+
+Or add the following to your `init.el` to activate automatically:
+
+```elisp
+(add-hook 'csv-mode-hook #'rainbow-csv-mode)
+(add-hook 'tsv-mode-hook #'rainbow-csv-mode)
 ```
 
 ## 🔗 References
