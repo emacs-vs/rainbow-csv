@@ -40,16 +40,29 @@
   :link '(url-link :tag "Repository" "https://github.com/emacs-vs/rainbow-csv"))
 
 (defcustom rainbow-csv-colors
-  '("#CCCCCC"
-    "#569CD6"
-    "#DCCD79"
-    "#529955"
-    "#CE834A"
-    "#8CDCFE"
-    "#B5C078"
-    "#4EC9B0"
-    "#569CD6"
-    "#F44747")
+  (cond
+   ((eq 'light (frame-parameter nil 'background-mode))
+    '("#333333"
+      "#A96329"
+      "#233286"
+      "#AD66AA"
+      "#317CB5"
+      "#732301"
+      "#4A3F87"
+      "#B1364F"
+      "#A96329"
+      "#0BB8B8"))
+    (t
+     '("#CCCCCC"
+       "#569CD6"
+       "#DCCD79"
+       "#529955"
+       "#CE834A"
+       "#8CDCFE"
+       "#B5C078"
+       "#4EC9B0"
+       "#569CD6"
+       "#F44747")))
   "List of colors to use."
   :type 'list
   :group 'rainbow-csv)
