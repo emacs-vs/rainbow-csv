@@ -52,18 +52,25 @@
       "#B1364F"
       "#A96329"
       "#0BB8B8"))
-    (t
-     '("#CCCCCC"
-       "#569CD6"
-       "#DCCD79"
-       "#529955"
-       "#CE834A"
-       "#8CDCFE"
-       "#B5C078"
-       "#4EC9B0"
-       "#569CD6"
-       "#F44747")))
+   (t
+    '("#CCCCCC"
+      "#569CD6"
+      "#DCCD79"
+      "#529955"
+      "#CE834A"
+      "#8CDCFE"
+      "#B5C078"
+      "#4EC9B0"
+      "#569CD6"
+      "#F44747")))
   "List of colors to use."
+  :type 'list
+  :group 'rainbow-csv)
+
+(defcustom rainbow-csv-separators
+  '((tsv-mode . ?\t)
+    (csv-mode . ?\,))
+  "Alist map mode to separator."
   :type 'list
   :group 'rainbow-csv)
 
@@ -111,10 +118,9 @@
   (interactive (list (when current-prefix-arg (read-char "Separator: "))))
   (rainbow-csv--revert-font-lock-keywords)
   (font-lock-mode 1)
-  (let* ((separator (or separator (cl-case major-mode
-                                    (`tsv-mode ?\t)
-                                    (`csv-mode ?\,)
-                                    (t ?\,))))
+  (let* ((separator (or separator
+                        (cdr (assoc major-mode rainbow-csv-separators))
+                        ?\,))
          (n (save-excursion
               (goto-char (point-min))
               (search-forward "," nil t)
