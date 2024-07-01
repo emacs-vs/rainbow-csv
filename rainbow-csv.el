@@ -128,7 +128,7 @@
                              (line-beginning-position) (line-end-position))))
          (n (1+ n)))
     (dotimes (i n)
-      (let* ((r (format "^\\([^%c\n]+[%c\n]\\)\\{%d\\}"
+      (let* ((r (format "^\\([^%c\n]*[%c\n]\\)\\{%d\\}"
                         separator separator (1+ i)))
              (len (length rainbow-csv-colors))
              (color (nth (% i len) rainbow-csv-colors)))
