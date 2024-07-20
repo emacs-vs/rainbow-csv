@@ -64,15 +64,14 @@
       "#569CD6"
       "#F44747")))
   "List of colors to use."
-  :type 'list
+  :type '(list color)
   :group 'rainbow-csv)
 
-(defcustom rainbow-csv-separators
-  '((tsv-mode . ?\t)
-    (csv-mode . ?\,))
+(defcustom rainbow-csv-separators nil
   "Alist map mode to separator."
-  :type 'list
+  :type '(list (cons symbol character))
   :group 'rainbow-csv)
+(make-obsolete 'rainbow-csv-separators 'csv-separators "1.0.0")
 
 (defvar rainbow-csv--old-csv-font-lock-keywords nil
   "Store the old value for variable `csv-font-lock-keywords'.")
@@ -114,28 +113,34 @@
 
 ;;;###autoload
 (defun rainbow-csv-highlight (&optional separator)
-  "Not documented (SEPARATOR)."
+  "Highlight CSV with rainbow colors, optionally select SEPARATOR."
   (interactive (list (when current-prefix-arg (read-char "Separator: "))))
   (rainbow-csv--revert-font-lock-keywords)
   (font-lock-mode 1)
   (let* ((separator (or separator
-                        (cdr (assoc major-mode rainbow-csv-separators))
-                        ?\,))
-         (n (save-excursion
-              (goto-char (point-min))
-              (search-forward "," nil t)
-              (count-matches (string separator)
-                             (line-beginning-position) (line-end-position))))
-         (n (1+ n)))
-    (dotimes (i n)
-      (let* ((r (format "^\\([^%c\n]*[%c\n]\\)\\{%d\\}"
-                        separator separator (1+ i)))
+                        (csv-guess-separator ; From `csv-guess-set-separator'
+                         (buffer-substring-no-properties
+                          (point-min) (min 8192 (point-max)))
+                         2048)))
+         (fields (save-excursion
+                   (goto-char (point-min))
+                   (csv--collect-fields (line-end-position))))
+         ;; Is the first field quoted?
+         (quote-char (string-match-p (format "^\\([%s]\\).*\\1$" (string-join csv-field-quotes)) (car fields)))
+         (quote-char (and quote-char (substring (car fields) nil 1)))) ; Get the first char
+    (dotimes (i (length fields))
+      (let* ((r (if quote-char
+                    (format "^\\(%s[^%s]*%s[%c\n]\\)\\{%d\\}"
+                            quote-char quote-char quote-char separator (1+ i))
+                  (format "^\\([^%c\n]*[%c\n]\\)\\{%d\\}"
+                          separator separator (1+ i))))
              (len (length rainbow-csv-colors))
              (color (nth (% i len) rainbow-csv-colors)))
         (setq csv-font-lock-keywords
               (append csv-font-lock-keywords
                       `((,r (1 '(face (:foreground ,color)) prepend t))))))))
   (font-lock-refresh-defaults))
+
 
 (provide 'rainbow-csv)
 ;;; rainbow-csv.el ends here
