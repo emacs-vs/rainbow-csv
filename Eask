@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "rainbow-csv"
          "0.1.0"
          "Highlight CSV and TSV files in different rainbow colors")
