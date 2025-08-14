@@ -117,17 +117,18 @@
   (interactive (list (when current-prefix-arg (read-char "Separator: "))))
   (rainbow-csv--revert-font-lock-keywords)
   (font-lock-mode 1)
-  (let* ((separator (or separator
-                        (csv-guess-separator ; From `csv-guess-set-separator'
-                         (buffer-substring-no-properties
-                          (point-min) (min 8192 (point-max)))
-                         2048)))
-         (fields (save-excursion
-                   (goto-char (point-min))
-                   (csv--collect-fields (line-end-position))))
-         ;; Is the first field quoted?
-         (quote-char (string-match-p (format "^\\([%s]\\).*\\1$" (string-join csv-field-quotes)) (car fields)))
-         (quote-char (and quote-char (substring (car fields) nil 1)))) ; Get the first char
+  (when-let* ((separator (or separator
+                             (csv-guess-separator ; From `csv-guess-set-separator'
+                              (buffer-substring-no-properties
+                               (point-min) (min 8192 (point-max)))
+                              2048)))
+              (fields
+               (save-excursion
+                 (goto-char (point-min))
+                 (seq-filter (lambda (s) (not (string-empty-p s))) (csv--collect-fields (line-end-position)))))
+              ;; Is the first field quoted?
+              (quote-char (string-match-p (format "^\\([%s]\\).*\\1$" (string-join csv-field-quotes)) (car fields)))
+              (quote-char (and quote-char (substring (car fields) nil 1)))) ; Get the first char
     (dotimes (i (length fields))
       (let* ((r (if quote-char
                     (format "^\\(%s[^%s]*%s[%c\n]\\)\\{%d\\}"
