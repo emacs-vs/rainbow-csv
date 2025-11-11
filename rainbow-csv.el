@@ -125,21 +125,21 @@
               (fields
                (save-excursion
                  (goto-char (point-min))
-                 (seq-filter (lambda (s) (not (string-empty-p s))) (csv--collect-fields (line-end-position)))))
-              ;; Is the first field quoted?
-              (quote-char (string-match-p (format "^\\([%s]\\).*\\1$" (string-join csv-field-quotes)) (car fields)))
-              (quote-char (and quote-char (substring (car fields) nil 1)))) ; Get the first char
-    (dotimes (i (length fields))
-      (let* ((r (if quote-char
-                    (format "^\\(%s[^%s]*%s[%c\n]\\)\\{%d\\}"
-                            quote-char quote-char quote-char separator (1+ i))
-                  (format "^\\([^%c\n]*[%c\n]\\)\\{%d\\}"
-                          separator separator (1+ i))))
-             (len (length rainbow-csv-colors))
-             (color (nth (% i len) rainbow-csv-colors)))
-        (setq csv-font-lock-keywords
-              (append csv-font-lock-keywords
-                      `((,r (1 '(face (:foreground ,color)) prepend t))))))))
+                 (seq-filter (lambda (s) (not (string-empty-p s))) (csv--collect-fields (line-end-position))))))
+    ;; Is the first field quoted?
+    (let* ((quote-char (string-match-p (format "^\\([%s]\\).*\\1$" (string-join csv-field-quotes)) (car fields)))
+           (quote-char (and quote-char (substring (car fields) nil 1)))) ; Get the first char
+      (dotimes (i (length fields))
+        (let* ((r (if quote-char
+                      (format "^\\(%s[^%s]*%s[%c\n]\\)\\{%d\\}"
+                              quote-char quote-char quote-char separator (1+ i))
+                    (format "^\\([^%c\n]*[%c\n]\\)\\{%d\\}"
+                            separator separator (1+ i))))
+               (len (length rainbow-csv-colors))
+               (color (nth (% i len) rainbow-csv-colors)))
+          (setq csv-font-lock-keywords
+                (append csv-font-lock-keywords
+                        `((,r (1 '(face (:foreground ,color)) prepend t)))))))))
   (font-lock-refresh-defaults))
 
 
